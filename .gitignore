@@ -1,0 +1,25 @@
+# Ignora node_modules em qualquer subpasta
+**/node_modules/
+
+# Ignora arquivos de ambiente
+**/.env
+**/.env.*
+
+# Builds e pastas geradas
+**/dist/
+**/build/
+**/.next/
+
+# Logs
+**/*.log
+
+# Arquivos temporários ou de cache
+**/*.tsbuildinfo
+**/coverage/
+**/*.lcov
+
+# Arquivos de sistema / IDEs
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
