@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
 import { UserRepository } from "../repositories/user.repository";
-import { BadRequestError } from "../helpers/api-erros";
+import { BadRequestError, UnauthorizedError } from "../helpers/api-erros";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export class UserController {
   async create(req: Request, res: Response) {
@@ -26,5 +27,31 @@ export class UserController {
     const { password: _, ...user } = newUser;
 
     return res.status(201).json(user);
+  }
+
+  async login(req: Request, res: Response) {
+    const { email, password } = req.body;
+
+    const user = await UserRepository.findOneBy({ email });
+
+    if (!user) {
+      throw new BadRequestError("email ou senha inválidos");
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      throw new BadRequestError("email ou senha inválidos");
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET ?? "", {
+      expiresIn: "2h",
+    });
+
+    return res.status(200).json({ token });
+  }
+
+  async getProfile(req: Request, res: Response) {
+    return res.status(200).json(req.user);
   }
 }
